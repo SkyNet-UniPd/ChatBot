@@ -1,0 +1,26 @@
+{
+    "name": "skynet-chatbot",
+    "version": "1.0.0",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "postinstall": "pip3 install -r ./requirements.txt",
+        "dev": "concurrently yarn:dev:*",
+        "dev:react": "cd react && yarn watch",
+        "dev:python": "cd SkyNetChatbotVirtualEnv/SkyNetChatbot && sh build.sh && python3 manage.py runserver",
+        "devwin": "concurrently yarn:devwin:*",
+        "devwin:react": "yarn dev:react",
+        "devwin:python": "cd SkyNetChatbotVirtualEnv/SkyNetChatbot && build.bat && py -3.7 manage.py runserver",
+        "build": "cd SkyNetChatbotVirtualEnv/SkyNetChatbot && sh build.sh",
+        "start": "cd SkyNetChatbotVirtualEnv/SkyNetChatbot && gunicorn chat.wsgi:application --timeout 600",
+        "mac": "brew install pyenv && pyenv install && pip3 install --upgrade pip3 setuptools wheel",
+        "newmigrations": "cd SkyNetChatbotVirtualEnv/SkyNetChatbot && python3 manage.py makemigrations",
+        "render": "cd react && yarn build"
+    },
+    "workspaces": [
+        "react"
+    ],
+    "devDependencies": {
+        "concurrently": "^7.2.1"
+    }
+}

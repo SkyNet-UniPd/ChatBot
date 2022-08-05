@@ -1,0 +1,23 @@
+{
+  "name": "react",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "parcel serve src/index.html --port 3000",
+    "watch": "parcel watch src/index.html --dist-dir ../SkyNetChatbotVirtualEnv/SkyNetChatbot/chat/static",
+    "build": "parcel build src/index.html --dist-dir ../SkyNetChatbotVirtualEnv/SkyNetChatbot/staticfiles"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.39",
+    "@types/react": "^18.0.11",
+    "@types/react-dom": "^18.0.5",
+    "autoprefixer": "^10.4.7",
+    "parcel": "^2.6.0",
+    "postcss": "^8.4.14",
+    "process": "^0.11.10",
+    "tailwindcss": "^3.0.24"
+  },
+  "dependencies": {
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0"
+  }
+}
