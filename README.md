@@ -26,3 +26,16 @@ On Windows:
 ```
 yarn run devwin
 ```
+
+## Execute Tests
+
+Command to run all tests present in the Django Project
+
+```
+python3 manage.py test
+```
+
+To run the tests specifically within an app module
+
+```
+python3 manage.py test specific_test
