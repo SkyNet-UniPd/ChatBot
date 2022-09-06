@@ -1,12 +1,10 @@
 import json
+import re
 
-from django.utils.decorators import method_decorator
 from django.views.generic import View
 from django.http import JsonResponse
 from chatterbot.conversation import Statement
 from chat.adapters.default_adapter import DefaultAdapter
-
-from .train import ChatterBotTraining
 
 from chat.custom_chatbot import CustomChatBot
 
@@ -21,8 +19,6 @@ class ChatterBotApiView(View):
     """
 
     chatbot = CustomChatBot()
-
-    ChatterBotTraining(chatbot.chatterbot)
 
     def post(self, request, *args, **kwargs):
         """
@@ -39,11 +35,19 @@ class ChatterBotApiView(View):
                 ]
             }, status=400)
 
-        input_statement = Statement(input_data['text'])
+        self.chatbot.api_key = input_data['api_key']
+        # 87654321-4321-4321-4321-210987654321
+        
+        # Creazione dello Statement in cui viene fatto un controllo dell'input dell'utente
+        # Vengono sostituiti i caratteri speciali (@,%,$,ecc) con il carattere ' '
+        # Poi ci si assicura che le parole valide siano separate da un singolo spazio
+        text = re.sub(r"[^\w \n\-.]", ' ', str(input_data['text']))
+        final_text = re.sub(r" +", " ", text)
+        input_statement = Statement(final_text)
 
-        self.response = self.chatbot.select_response(input_statement)
+        response = self.chatbot.select_response(input_statement)
 
-        response_data = self.response.serialize()
+        response_data = response.serialize()
 
         return JsonResponse(response_data, status=200)
 
@@ -54,5 +58,5 @@ class ChatterBotApiView(View):
 
         return JsonResponse({
             'name': self.chatbot.chatterbot.name,
-            'text': DefaultAdapter.helloResponse,
+            'text': DefaultAdapter.hello_response,
         }, status=200)

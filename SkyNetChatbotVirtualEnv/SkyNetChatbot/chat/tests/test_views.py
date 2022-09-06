@@ -1,16 +1,27 @@
 from django.test import TestCase
-from django.views.generic import View
 from chat.views import ChatterBotApiView
-from django.http import JsonResponse
-import requests
+from django.test import Client
+from django.urls import reverse
 
 
 class ViewsTest(TestCase):
-    @classmethod
+    
     def setUp(self):
-        self.request = requests.get('https://apibot4me.imolinfo.it/v1/locations/presence/me', headers={"api_key": '87654321-4321-4321-4321-210987654321'})
-        #self.view = ChatterBotApiView
+        self.client = Client()
+        self.api_key = '87654321-4321-4321-4321-210987654321'
+        self.view = ChatterBotApiView()
+
+    def test_get_request(self):
+        response = self.client.get(reverse("chatterbot"))
+        self.assertEqual(response.status_code, 200)
 
     def test_post_request(self):
-        #self.assertEqual(self.view.post(ChatterBotApiView.as_view(), self.request).status, 200)
-        pass
+        request = reverse("chatterbot")
+        response = self.client.post(request, data={'api_key': self.api_key, 'text': 'ciao'}, content_type=
+                                    "application/json")
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_request_not_text(self):
+        request = reverse("chatterbot")
+        response = self.client.post(request, data={'api_key': self.api_key}, content_type="application/json")
+        self.assertEqual(response.status_code, 400)

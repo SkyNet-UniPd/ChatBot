@@ -1,5 +1,8 @@
 # SkyNet Chatbot
 Progetto Ingegneria del Software 2021-2022, gruppo SkyNet
+# PoC SkyNetChatbot
+
+SkyNet Chatbot
 
 ## Requirments 
 1. Python 3.7.9
@@ -39,3 +42,4 @@ To run the tests specifically within an app module
 
 ```
 python3 manage.py test specific_test
+```

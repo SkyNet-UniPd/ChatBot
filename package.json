@@ -15,12 +15,14 @@
         "start": "cd SkyNetChatbotVirtualEnv/SkyNetChatbot && gunicorn chat.wsgi:application --timeout 600",
         "mac": "brew install pyenv && pyenv install && pip3 install --upgrade pip3 setuptools wheel",
         "newmigrations": "cd SkyNetChatbotVirtualEnv/SkyNetChatbot && python3 manage.py makemigrations",
-        "render": "cd react && yarn build"
+        "render": "cd react && yarn build",
+        "test": "cd SkyNetChatbotVirtualEnv/SkyNetChatbot && python3 manage.py test"
     },
     "workspaces": [
         "react"
     ],
     "devDependencies": {
-        "concurrently": "^7.2.1"
+        "concurrently": "^7.2.1",
+        "process": "^0.11.10"
     }
 }

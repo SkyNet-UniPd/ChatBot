@@ -1,6 +1,8 @@
 import React, { FC, useEffect, useRef, useState } from "react";
+import {handleSession, sessionErrorHandler} from "./auth/sessionHandler";
 import { MessageBubble } from "./chat/MessageBubble";
 import { MessageInput } from "./chat/MessageInput";
+import { getApiKey } from "./auth/authService";
 
 interface Message {
   text: string;
@@ -19,7 +21,22 @@ export const App: FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesBottom = useRef(null);
 
-  useEffect(() => {
+  /**
+   * Mostra l'ultimo messaggio ricevuto, scrollando fino alla sua posizione
+   */
+  function scrollToLatestMessage(): void {
+    if (messagesBottom.current)
+      messagesBottom.current.scrollIntoView({
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest",
+      });
+  }
+
+  /**
+   * Ottiene e salva il messaggio introduttivo dal server
+   */
+  function getFirstMessage(): void {
     fetch(CHATTERBOT_API_URL)
       .then((res) => res.json())
       .then(
@@ -30,26 +47,35 @@ export const App: FC = () => {
           console.error("error", error);
         }
       );
-  }, []);
+  }
 
-  const handleSubmit = () => {
+  /**
+   * Gestisce l'invio del messaggio dell'utente al server chatterbot 
+   * fornendo inoltre l'API KEY usata come metodo di autenticazione qualora presente
+   */
+  function handleSubmit(): void {
+    const API_KEY = getApiKey();
+
     fetch(CHATTERBOT_API_URL, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": "application/json"
       },
       body: JSON.stringify({
         text: message,
-      }),
+        api_key: API_KEY
+      })
     })
       .then((res) => res.json())
       .then(
         (result) => {
+          handleSession(result.text, message);
+          sessionErrorHandler(result.text);
           setMessages([
             ...messages,
             {
               text: message,
-              isSender: true,
+              isSender: true
             },
             { text: result.text, isSender: false },
           ]);
@@ -59,14 +85,14 @@ export const App: FC = () => {
           console.error("error", error);
         }
       );
-  };
+  }
 
   useEffect(() => {
-    messagesBottom.current.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest",
-    });
+    getFirstMessage();
+  }, []);
+
+  useEffect(() => {
+    scrollToLatestMessage();
   }, [messages]);
 
   return (

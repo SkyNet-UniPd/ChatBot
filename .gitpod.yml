@@ -1,0 +1,17 @@
+
+tasks:
+  - init: yarn install
+    command: yarn dev
+
+
+# Ports to expose on workspace startup
+ports:
+  - port: 8000
+    onOpen: notify
+  - port: 1234
+    onOpen: ignore
+
+vscode:
+  extensions:
+    - esbenp.prettier-vscode
+    - ms-python.python

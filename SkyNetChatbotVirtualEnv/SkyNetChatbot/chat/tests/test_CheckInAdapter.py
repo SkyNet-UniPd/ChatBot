@@ -3,75 +3,51 @@ from chatterbot import ChatBot
 from chat import settings
 from chatterbot.conversation import Statement
 import requests
-# from chat.check_in_adapter import can_process
+from chat.adapters.check_in_adapter import CheckInAdapter
+from chat.requests.check_in_request import CheckInRequest
 
 
 class CheckInAdapterTest(TestCase):
-    @classmethod
+    chatterbot = None
+    adapter = None
+
     def setUp(self):
         self.chatterbot = ChatBot(**settings.CHATTERBOT)
-        self.adapter = self.chatterbot.logic_adapters[0]
-
+        self.adapter = CheckInAdapter(self.chatterbot)
         api_key = '87654321-4321-4321-4321-210987654321'
+        self.adapter.api_key = api_key
         # *IMPORTANTE*
         # NON CAMBIARE QUESTO LINK, SI PRESUPPONE CHE TUTTI I TEST SIANO EFFETTUATI NELLA SEDE 'IMOLA'
-        # QUESTO MEDOTO VIENE ESEGUITO PRIMA DI TUTTI I TEST E LE DUE RIGHE SOTTOSTANI ELIMINANO I CHECK-IN
-        # PRECEDENTI, IN MODO TALE DA NON AVERE DEI CONFLITTI DI RISPOSTE, INVALIDANDO I TEST
         url = 'https://apibot4me.imolinfo.it/v1/locations/IMOLA/presence'
-        service_response = requests.delete(url, headers={"api_key": api_key, "Content-Type": "application/json"})
+        requests.delete(url, headers={"api_key": api_key, "Content-Type": "application/json"})
 
     # def tearDown(self):
     #     pass
 
-    def test_there_is_adapter(self):
-        """Test per il controllo che esista almento un adapter"""
-        self.assertIsNotNone(self.adapter)
+    def test_there_is_checkin_adapter(self):
+        """TU01: Test per il controllo che esista un adapter per il check-in"""
+        adapters_types = []
+        for logic_adapter in self.chatterbot.logic_adapters:
+            adapters_types.append(type(logic_adapter))
+        self.assertIn(CheckInAdapter, adapters_types)
 
-    def test_correct_process_words(self):
-        """Test che riconosce la correttezza del comando di check in. Le parole acettate sono ['check-in', 'checkin', 'check in', 'arrivato', 'entrato', 'entro', 'presenza']"""
-        word = Statement('check-in')
-        self.assertEqual(self.adapter.can_process(word), True)
-
-    def test_incorret_process_words(self):
-        """Test che riconosce la non correttezza del comando di check in. Le parole acettate sono ['check-in', 'checkin', 'check in', 'arrivato', 'entrato', 'entro', 'presenza']"""
+    def test_incorrect_process_checkin_words(self):
+        """TU02: Test per non accettare richieste non pertinenti al check-in"""
         word = Statement('xheck-on')
-        self.assertEqual(self.adapter.can_process(word), False)
+        self.assertFalse(self.adapter.can_process(word))
 
-    def test_exit_command(self):
-        """Test che riconosce il comando di interrompere il bot. Per eseguire tale comando le parole acettate sono ['esci', 'chiudi', 'annulla', 'stop', 'fine', 'exit']"""
-        word = Statement('exit')
-        self.assertEqual(self.adapter.process(word).text, 'Check-in annullato')
+    def test_correct_process_checkin_words(self):
+        """Test che riconosce la correttezza del comando di check in."""
+        word = Statement('check in')
+        self.assertTrue(self.adapter.can_process(word))
 
-    def test_corret_check_in_and_office_question(self):
-        """Test che verifica la comprensione di un check in e richiede la sede per tale operazione. Le parole acettate sono ['check-in', 'checkin', 'check in', 'arrivato', 'entrato', 'entro', 'presenza']"""
-        word = Statement('check-in')
-        self.adapter.can_process(word)
-        self.assertEqual(self.adapter.process(word).text, 'In quale sede vuoi effettuare il check-in?')
-
-    def test_incorret_check_in_command(self):
-        """Test che verifica la comprensione di un check in. Le parole acettate sono ['check-in', 'checkin', 'check in', 'arrivato', 'entrato', 'entro', 'presenza']"""
-        word = Statement('Pallone')
-        self.adapter.can_process(word)
-        self.assertEqual(self.adapter.process(word).text, "Errore interno! Riprovare ad effettuare l'operazione.")
-
-    def test_check_in_right_office(self):
-        """Test per il controllo di un check in selezionando un ufficio esistente."""
-        word = Statement('check-in')
-        self.adapter.can_process(word)
-        self.adapter.process(word)
-        office = Statement('IMOLA')
-        self.assertEqual(self.adapter.process(office).text, 'Check-in effettuato correttamente nella sede di ' + office.text)
-
-    def test_check_in_wrong_office(self):
-        """Test per il controllo di un check in selezionando un ufficio inesistente."""
-        word = Statement('check-in')
-        self.adapter.can_process(word)
-        self.adapter.process(word)
-        office = Statement('PADOVA')
-        self.assertEqual(self.adapter.process(office).text, 'La sede che hai inserito non esiste!\nIn quale sede vuoi effettuare il check-in?')
+    def test_correct_processing_stage_checkin(self):
+        """Test per il controllo che venga selezionato check-in adapter se l'operazione non è ancora terminata"""
+        self.adapter.processing_stage = "check-in"
+        self.assertTrue(self.adapter.can_process(Statement(None)))
 
     def test_check_in_already_done_in_office(self):
-        """Test per il controllo di un check in precedentemente effettuato in un determinato ufficio"""
+        """TU05: Test che controlla di non permettere di fare il check-in se risulta già effettuato un check-in """
         word = Statement('check-in')
         self.adapter.can_process(word)
         self.adapter.process(word)
@@ -79,10 +55,65 @@ class CheckInAdapterTest(TestCase):
         self.adapter.process(office)
         word = Statement('check-in')
         self.adapter.can_process(word)
-        self.assertEqual(self.adapter.process(office).text, 'Hai già fatto il check-in nella sede di ' + office.text)
+        self.assertEqual(self.adapter.process(office).text, self.adapter.checkin_done_response + self.adapter.sede)
 
-    def test_check_internal_error_message(self):
-        """Test per il controllo del ritorno del messaggio di errore interno"""
-        word = Statement('Pallone')
+    def test_correct_check_in_and_office_question(self):
+        """TU06: Test che verifica la richiesta della sede dove effettuare il check-in"""
+        word = Statement('check-in')
         self.adapter.can_process(word)
-        self.assertEqual(self.adapter.process(word).text, 'Errore interno! Riprovare ad effettuare l\'operazione.')
+        self.assertEqual(self.adapter.process(word).text, self.adapter.sede_response)
+
+    def test_check_in_wrong_office(self):
+        """TU07: Test che controlla che venga ritornato un messaggio di errore nel caso la sede inserita sia insesistente"""
+        self.adapter.processing_stage = "check-in sede"
+        office = Statement('PADOVA')
+        self.assertEqual(self.adapter.process(office).text, self.adapter.wrong_sede_response + "\n" +
+                         self.adapter.sede_response)
+
+    def test_check_sede_ok(self):
+        """TU08: Test per verificare che venga controllata la sede"""
+        sede = 'imola'
+        self.assertTrue(self.adapter.check_sede(sede))
+
+    def test_check_in_right_office(self):
+        """TU09: Test che controlla la correttezza della sede inserita"""
+        self.adapter.processing_stage = "check-in sede"
+        office = Statement('IMOLA')
+        self.assertEqual(self.adapter.process(office).text, self.adapter.success_response +
+                         self.adapter.sede)
+
+    def test_check_in_no_login(self):
+        """TU10: Test che controlla che non venga permesso di fare il check-in se prima non si è fatto il login"""
+        word = Statement('check-in')
+        self.adapter.can_process(word)
+        self.adapter.api_key = None
+        self.assertEqual(self.adapter.process(word).text, self.adapter.not_login_response)
+
+    def test_incorrect_check_in_command(self):
+        """Test che verifica che si ritorni un errore se viene processato un comando non di check-in."""
+        word = Statement('Pallone')
+        self.assertEqual(self.adapter.process(word).text, self.adapter.internal_error_response)
+
+    def test_check_in_request_error(self):
+        """Test per verificare che venga ritornato un errore se una richiesta API non va a buon fine"""
+        self.adapter.processing_stage = "check-in sede"
+        word = Statement('imola')
+        self.adapter.can_process(word)
+        self.adapter.api_key = "1"
+        response = self.adapter.process(word)
+        self.assertEqual(response.text, "Errore di autenticazione! Verifica di aver effettuato il login inserendo un "
+                                        "api key corretta! Error 401 - Unauthorized.")
+
+    def test_exit_command(self):
+        """Test che riconosce il comando d'interruzione della richiesta effettuata al bot. """
+        word = Statement('exit')
+        self.assertEqual(self.adapter.process(word).text, self.adapter.exit_response)
+
+    def test_check_sede_no(self):
+        """Test per verificare che venga controllata la sede"""
+        sede = 'roma'
+        self.assertFalse(self.adapter.check_sede(sede))
+
+    def test_check_presence(self):
+        """Test per verificare che venga controllata la presenza in sede"""
+        self.assertFalse(self.adapter.check_presence())
