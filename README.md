@@ -1,8 +1,5 @@
 # SkyNet Chatbot
 Progetto Ingegneria del Software 2021-2022, gruppo SkyNet
-# PoC SkyNetChatbot
-
-SkyNet Chatbot
 
 ## Requirments 
 1. Python 3.7.9
