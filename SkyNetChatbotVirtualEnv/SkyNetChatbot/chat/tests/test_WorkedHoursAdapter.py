@@ -51,12 +51,12 @@ class WorkedHoursAdapterTest(TestCase):
 
     def test_check_project_ok(self):
         """TU55: Test per verificare che venga controllato il codice del progetto"""
-        project = '99'
+        project = 'skynetTest'
         self.assertTrue(self.adapter.check_project(project))
 
     def test_check_project_no(self):
         """Test per verificare che venga controllato il codice del progetto"""
-        project = 'test'
+        project = '-'
         self.assertFalse(self.adapter.check_project(project))
 
     def test_exit_command(self):
@@ -69,7 +69,7 @@ class WorkedHoursAdapterTest(TestCase):
         word = Statement('ore consuntivate')
         self.adapter.can_process(word)
         self.adapter.process(word)
-        project = Statement('99')
+        project = Statement('skynetTest')
         self.adapter.can_process(project)
         self.assertEqual(self.adapter.process(project).text, self.adapter.success_response + str(self.adapter.hours))
 
@@ -81,7 +81,7 @@ class WorkedHoursAdapterTest(TestCase):
     def test_worked_hours_request_error(self):
         """Test per verificare che venga ritornato un errore se una richiesta API non va a buon fine"""
         self.adapter.processing_stage = "ore progetto"
-        word = Statement('1')
+        word = Statement('skynetTest')
         self.adapter.can_process(word)
         self.adapter.api_key = "1"
         response = self.adapter.process(word)

@@ -50,7 +50,7 @@ class ActivityAdapterTest(TestCase):
     def test_right_project_and_ore_question(self):
         """TU37: Test per il controllo inserimento attività inserendo un progetto esistente e non terminato."""
         self.adapter.processing_stage = "attività progetto"
-        project = Statement('TEST-SKYNET')
+        project = Statement('SkynetTest')
         response = self.adapter.process(project)
         self.assertEqual(response.text, self.adapter.selected_progetto_response + project.text +
                          "! \n" + self.adapter.ore_response)
@@ -105,7 +105,7 @@ class ActivityAdapterTest(TestCase):
         word = Statement('Inserisci attività')
         self.adapter.can_process(word)
         self.adapter.process(word)
-        project = Statement('TEST-SKYNET')
+        project = Statement('skynetTest')
         self.adapter.process(project)
         billable_hours = Statement(8.0)
         self.adapter.process(billable_hours)
@@ -148,12 +148,12 @@ class ActivityAdapterTest(TestCase):
 
     def test_check_project_ok(self):
         """TU46: Test per verificare che venga controllato il codice del progetto"""
-        project = '99'
+        project = 'skynetTest'
         self.assertTrue(self.adapter.check_project(project))
 
     def test_check_project_no(self):
         """Test per verificare che venga controllato il codice del progetto"""
-        project = 'test'
+        project = '-'
         self.assertFalse(self.adapter.check_project(project))
 
     def test_check_sede_ok(self):
@@ -169,7 +169,7 @@ class ActivityAdapterTest(TestCase):
     def test_activity_request_error(self):
         """Test per verificare che venga ritornato un errore se una richiesta API non va a buon fine"""
         self.adapter.processing_stage = "attività progetto"
-        word = Statement('TEST-SKYNET')
+        word = Statement('skynetTest')
         self.adapter.can_process(word)
         self.adapter.api_key = "1"
         response = self.adapter.process(word)
