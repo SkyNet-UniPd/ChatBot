@@ -1,7 +1,7 @@
 from django.test import TestCase
 from chatterbot import ChatBot
-from chat import settings
 from chatterbot.conversation import Statement
+from chat import settings
 from chat.adapters.login_adapter import LoginAdapter
 
 

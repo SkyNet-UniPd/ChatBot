@@ -1,8 +1,8 @@
-from chat import settings
 from django.test import TestCase
-from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chatterbot.conversation import Statement
 from chatterbot.chatterbot import ChatBot
+from chat import settings
+from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 
 
 class CustomLogicAdapterTest(TestCase):

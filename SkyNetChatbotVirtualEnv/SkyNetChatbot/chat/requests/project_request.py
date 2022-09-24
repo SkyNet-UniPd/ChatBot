@@ -10,9 +10,9 @@ class ProjectRequest(AbstractRequest):
     def send(self):
         url = 'https://apibot4me.imolinfo.it/v1/projects/'
         try:
-            service_response = requests.get(url, headers={"api_key": self.api_key})
+            service_response = requests.get(url, headers={"api_key": self.api_key}, timeout=10)
         except requests.RequestException as req:
-            raise RequestError(str(req.__class__.__name__))
+            raise RequestError(str(req.__class__.__name__)) from req
         if service_response.status_code == 200:
             self.status = "Ok"
         else:

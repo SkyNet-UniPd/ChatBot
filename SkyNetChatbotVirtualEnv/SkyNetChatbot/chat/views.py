@@ -1,14 +1,14 @@
 import json
 import re
-
+import logging
+import base64
 from django.views.generic import View
 from django.http import JsonResponse
 from chatterbot.conversation import Statement
 from chat.adapters.default_adapter import DefaultAdapter
-
 from chat.custom_chatbot import CustomChatBot
-
-import logging
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import unpad
 
 logging.basicConfig(level=logging.CRITICAL)
 
@@ -20,7 +20,7 @@ class ChatterBotApiView(View):
 
     chatbot = CustomChatBot()
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request):
         """
         Return a response to the statement in the posted data.
 
@@ -35,7 +35,12 @@ class ChatterBotApiView(View):
                 ]
             }, status=400)
 
-        self.chatbot.api_key = input_data['api_key']
+        api_key = input_data['api_key']
+        if api_key is not None:
+            dec_apy_key = self.decrypt(api_key)
+            self.chatbot.api_key = dec_apy_key
+        else:
+            self.chatbot.api_key = input_data['api_key']
         # 87654321-4321-4321-4321-210987654321
         
         # Creazione dello Statement in cui viene fatto un controllo dell'input dell'utente
@@ -51,7 +56,7 @@ class ChatterBotApiView(View):
 
         return JsonResponse(response_data, status=200)
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request):
         """
         Return data corresponding to the current conversation.
         """
@@ -60,3 +65,9 @@ class ChatterBotApiView(View):
             'name': self.chatbot.chatterbot.name,
             'text': DefaultAdapter.hello_response,
         }, status=200)
+
+    def decrypt(self, enc):
+        key = '2442264529482B4D'
+        enc = base64.b64decode(enc)
+        cipher = AES.new(key.encode('utf-8'), AES.MODE_ECB)
+        return unpad(cipher.decrypt(enc),16)

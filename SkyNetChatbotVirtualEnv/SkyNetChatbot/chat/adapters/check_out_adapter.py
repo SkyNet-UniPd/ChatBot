@@ -1,9 +1,9 @@
-from chat.adapters.custom_logic_adapter import CustomLogicAdapter
+import re
 from chatterbot.conversation import Statement
+from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chat.lev_dist import lev_dist, lev_dist_custom_dist, lev_dist_str
 from chat.requests.check_out_request import RequestError
 from chat.requests.request_factory import PresenceRequestCreator, CheckOutRequestCreator
-import re
 
 
 class CheckOutAdapter(CustomLogicAdapter):
@@ -33,8 +33,7 @@ class CheckOutAdapter(CustomLogicAdapter):
         if lev_dist(words, check_out_words):
             self.processing_stage = "check-out"
             return True
-        else:
-            return False
+        return False
 
     def process(self, statement, additional_response_selection_parameters=None):
 

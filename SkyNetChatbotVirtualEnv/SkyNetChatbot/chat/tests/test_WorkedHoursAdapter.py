@@ -1,7 +1,7 @@
 from django.test import TestCase
 from chatterbot import ChatBot
-from chat import settings
 from chatterbot.conversation import Statement
+from chat import settings
 from chat.adapters.worked_hours_adapter import WorkedHoursAdapter
 
 
@@ -56,7 +56,7 @@ class WorkedHoursAdapterTest(TestCase):
 
     def test_check_project_no(self):
         """Test per verificare che venga controllato il codice del progetto"""
-        project = '-'
+        project = 'test'
         self.assertFalse(self.adapter.check_project(project))
 
     def test_exit_command(self):
@@ -81,7 +81,7 @@ class WorkedHoursAdapterTest(TestCase):
     def test_worked_hours_request_error(self):
         """Test per verificare che venga ritornato un errore se una richiesta API non va a buon fine"""
         self.adapter.processing_stage = "ore progetto"
-        word = Statement('skynetTest')
+        word = Statement('1')
         self.adapter.can_process(word)
         self.adapter.api_key = "1"
         response = self.adapter.process(word)

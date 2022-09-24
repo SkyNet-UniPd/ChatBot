@@ -33,9 +33,9 @@ class ActivityRequest(AbstractRequest):
                 try:
                     service_response = requests.post(url, headers={"api_key": self.api_key,
                                                      "Content-Type": "application/json"},
-                                                     json=[json_data])
+                                                     json=[json_data], timeout=10)
                 except requests.RequestException as req:
-                    raise RequestError(str(req.__class__.__name__))
+                    raise RequestError(str(req.__class__.__name__)) from req
                 if service_response.status_code == 204:
                     self.status = "Ok"
                     return service_response
@@ -49,9 +49,9 @@ class ActivityRequest(AbstractRequest):
                 data_filter = "from=" + str(self.date) + "&to=" + str(self.date)
                 url = 'https://apibot4me.imolinfo.it/v1/projects/' + self.project + "/activities/me?" + data_filter
                 try:
-                    service_response = requests.get(url, headers={'api_key': self.api_key})
+                    service_response = requests.get(url, headers={'api_key': self.api_key}, timeout=10)
                 except requests.RequestException as req:
-                    raise RequestError(str(req.__class__.__name__))
+                    raise RequestError(str(req.__class__.__name__)) from req
                 if service_response.status_code == 200 and service_response.content:
                     self.status = "Ok"
                 else:
@@ -63,7 +63,6 @@ class ActivityRequest(AbstractRequest):
     def is_ready(self):
         if self.properties.get("project") and self.properties.get("billableHours") and self.properties.get("sede"):
             return True
-        else:
-            return False
+        return False
 
     

@@ -1,6 +1,6 @@
+import requests
 from django.test import TestCase
 from chatterbot.conversation import Statement
-import requests
 from chat.custom_chatbot import CustomChatBot
 from chat.adapters.default_adapter import DefaultAdapter
 from chat.adapters.check_in_adapter import CheckInAdapter
@@ -18,7 +18,7 @@ class CustomChatbotTest(TestCase):
         # QUESTO MEDOTO VIENE ESEGUITO PRIMA DI TUTTI I TEST E LE DUE RIGHE SOTTOSTANI ELIMINANO I CHECK-IN
         # PRECEDENTI, IN MODO TALE DA NON AVERE DEI CONFLITTI DI RISPOSTE, INVALIDANDO I TEST
         url = 'https://apibot4me.imolinfo.it/v1/locations/IMOLA/presence'
-        requests.delete(url, headers={"api_key": api_key, "Content-Type": "application/json"})
+        requests.delete(url, headers={"api_key": api_key, "Content-Type": "application/json"}, timeout=10)
 
     def test_check_select_adapter(self):
         """Test per verificare la selezione della risposta da un adapter"""

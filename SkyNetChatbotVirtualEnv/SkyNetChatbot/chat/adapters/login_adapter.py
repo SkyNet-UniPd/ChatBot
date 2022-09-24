@@ -1,5 +1,5 @@
-from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chatterbot.conversation import Statement
+from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chat.lev_dist import lev_dist_custom_dist
 from chat.requests.abstract_request import RequestError
 from chat.requests.request_factory import AuthRequestCreator
@@ -24,9 +24,8 @@ class LoginAdapter(CustomLogicAdapter):
 
         if not lev_dist_custom_dist(statement.text.split(), login_words, 0):
             return False
-        else:
-            self.processing_stage = "login" 
-            return True
+        self.processing_stage = "login" 
+        return True
 
     def process(self, statement, additional_response_selection_parameters=None):
 
@@ -72,7 +71,7 @@ class LoginAdapter(CustomLogicAdapter):
         response.confidence = confidence
         return response
 
-    def check_api_key(self, text: str):
+    def check_api_key(self, text):
         request = AuthRequestCreator().get_request(text)
         request.send()
         if request.get_status() == "Ok":

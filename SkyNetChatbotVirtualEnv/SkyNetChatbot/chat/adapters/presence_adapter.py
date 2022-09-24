@@ -1,6 +1,6 @@
-from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chatterbot.conversation import Statement
-from chat.lev_dist import lev_dist, lev_dist_str_correct_w, lev_dist_custom_dist, lev_dist_str
+from chat.adapters.custom_logic_adapter import CustomLogicAdapter
+from chat.lev_dist import lev_dist
 from chat.requests.presence_request import RequestError
 from chat.requests.request_factory import PresenceRequestCreator
 
@@ -15,7 +15,7 @@ class PresenceAdapter(CustomLogicAdapter):
         super().__init__(chatbot, **kwargs)
         self.sede = None
 
-    def can_process(self, statement, additional_response_selection_parameters=None):
+    def can_process(self, statement):
         presence_words = ['stato', 'presenza', 'tracciamento']
 
         input_words = statement.text.split()
@@ -24,9 +24,8 @@ class PresenceAdapter(CustomLogicAdapter):
             return True
         if not lev_dist(input_words, presence_words):
             return False
-        else:
-            self.processing_stage = "presenza"
-            return True
+        self.processing_stage = "presenza"
+        return True
 
     def process(self, statement, additional_response_selection_parameters=None):
 

@@ -1,10 +1,11 @@
-from chat.adapters.custom_logic_adapter import CustomLogicAdapter
+import datetime
+import re
 from chatterbot.conversation import Statement
+from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chat.lev_dist import lev_dist, lev_dist_str_correct_w, lev_dist_custom_dist
 from chat.requests.activity_request import RequestError
-import re
-from chat.requests.request_factory import ProjectRequestCreator, PresenceRequestCreator, LocationRequestCreator, ActivityRequestCreator
-import datetime
+from chat.requests.request_factory import ProjectRequestCreator, PresenceRequestCreator, LocationRequestCreator, \
+    ActivityRequestCreator
 
 
 class ActivityAdapter(CustomLogicAdapter):
@@ -43,7 +44,7 @@ class ActivityAdapter(CustomLogicAdapter):
             self.processing_stage = "attività"
             return True
 
-    def process(self, statement, additional_response_selection_parameters=None, **kwargs):
+    def process(self, statement, additional_response_selection_parameters=None):
 
         # Check if user wants to exit
         if self.processing_stage != 'attività' and self.check_exit(statement):
@@ -124,7 +125,7 @@ class ActivityAdapter(CustomLogicAdapter):
         response.confidence = confidence
         return response
 
-    def check_project(self, text: str):
+    def check_project(self, text):
         projects = []
         project_request = ProjectRequestCreator().get_request(self.api_key)
         request_response = project_request.send()
@@ -135,8 +136,7 @@ class ActivityAdapter(CustomLogicAdapter):
         if lev_dist_custom_dist(text.split(), projects, 1):
             self.project = lev_dist_str_correct_w(text.split(), projects)
             return True
-        else:
-            return False
+        return False
 
     def check_presence(self):
         request = PresenceRequestCreator().get_request(self.api_key)
@@ -159,5 +159,4 @@ class ActivityAdapter(CustomLogicAdapter):
         if lev_dist(text.split(), locations):
             self.sede = lev_dist_str_correct_w(text.split(), locations)
             return True
-        else:
-            return False
+        return False

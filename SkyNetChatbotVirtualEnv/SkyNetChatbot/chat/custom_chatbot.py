@@ -1,8 +1,7 @@
 from chatterbot import ChatBot
 from chatterbot.conversation import Statement
-from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chatterbot.logic import LogicAdapter
-
+from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chat import settings
 
 

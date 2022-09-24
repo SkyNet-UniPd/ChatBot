@@ -1,6 +1,5 @@
 from Levenshtein import distance
 
-
 def lev_dist(words: list, correct_words: list) -> bool:
     for word in words:
         for correctWord in correct_words:

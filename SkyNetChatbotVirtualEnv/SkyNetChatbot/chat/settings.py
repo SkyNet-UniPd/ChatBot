@@ -11,8 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-import dj_database_url
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -168,6 +168,8 @@ CHATTERBOT = {
         {"import_path": 'chat.adapters.logout_adapter.LogoutAdapter'},
         {"import_path": 'chat.adapters.worked_hours_adapter.WorkedHoursAdapter'},
         {"import_path": 'chat.adapters.presence_adapter.PresenceAdapter'},
+        {"import_path": 'chat.adapters.locations_adapter.LocationsAdapter'},
+        {"import_path": 'chat.adapters.projects_adapter.ProjectsAdapter'},
         # "statement_comparison_function": "chatterbot.comparisons.LevenshteinDistance",
     ],
     # 'preprocessors': 'chatterbot.preprocessors.clean_whitespace',

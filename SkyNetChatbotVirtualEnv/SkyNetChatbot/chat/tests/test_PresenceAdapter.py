@@ -1,9 +1,9 @@
+import requests
 from django.test import TestCase
 from chatterbot import ChatBot
-from chat import settings
 from chatterbot.conversation import Statement
+from chat import settings
 from chat.adapters.presence_adapter import PresenceAdapter
-import requests
 
 
 class PresenceAdapterTest(TestCase):
@@ -12,6 +12,8 @@ class PresenceAdapterTest(TestCase):
         self.adapter = PresenceAdapter(self.chatterbot)
         api_key = '87654321-4321-4321-4321-210987654321'
         self.adapter.api_key = api_key
+        url = 'https://apibot4me.imolinfo.it/v1/locations/IMOLA/presence'
+        requests.delete(url, headers={"api_key": self.adapter.api_key, "Content-Type": "application/json"}, timeout=10)
 
     def test_there_is_presence_adapter(self):
         """TU28: Test per il controllo che esista presence adapter"""
@@ -33,7 +35,7 @@ class PresenceAdapterTest(TestCase):
     def test_presence_found(self):
         """TU30: Test che controlla che l'utente risulti presente in una sede"""
         url = 'https://apibot4me.imolinfo.it/v1/locations/IMOLA/presence'
-        requests.post(url, headers={"api_key": self.adapter.api_key, "Content-Type": "application/json"})
+        requests.post(url, headers={"api_key": self.adapter.api_key, "Content-Type": "application/json"}, timeout=10)
         word = Statement('presenza')
         self.adapter.can_process(word)
         self.assertEqual(self.adapter.process(word).text, self.adapter.present_response + self.adapter.sede + '.')
@@ -48,7 +50,7 @@ class PresenceAdapterTest(TestCase):
     def test_presence_not_found(self):
         """Test che controlla che l'utente non risulti presente in alcuna sede"""
         url = 'https://apibot4me.imolinfo.it/v1/locations/IMOLA/presence'
-        requests.delete(url, headers={"api_key": self.adapter.api_key, "Content-Type": "application/json"})
+        requests.delete(url, headers={"api_key": self.adapter.api_key, "Content-Type": "application/json"}, timeout=10)
         word = Statement('presenza')
         self.adapter.can_process(word)
         self.assertEqual(self.adapter.process(word).text, self.adapter.not_present_response)

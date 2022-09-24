@@ -1,5 +1,5 @@
-from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chatterbot.conversation import Statement
+from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chat.lev_dist import lev_dist_custom_dist
 
 
@@ -12,7 +12,7 @@ class LogoutAdapter(CustomLogicAdapter):
     def __init__(self, chatbot, **kwargs):
         super().__init__(chatbot, **kwargs)
 
-    def can_process(self, statement, additional_response_selection_parameters=None):
+    def can_process(self, statement):
         logout_words = ['logout', 'log-out', 'esci', 'exit', 'uscire']
 
         if self.processing_stage is not None:
@@ -21,8 +21,7 @@ class LogoutAdapter(CustomLogicAdapter):
         if lev_dist_custom_dist(statement.text.split(), logout_words, 0):
             self.processing_stage = "logout"
             return True
-        else:
-            return False
+        return False
 
     def process(self, statement, additional_response_selection_parameters=None):
 

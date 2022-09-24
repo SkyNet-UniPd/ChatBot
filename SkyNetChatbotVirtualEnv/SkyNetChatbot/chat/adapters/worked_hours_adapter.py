@@ -1,7 +1,7 @@
-from chat.adapters.custom_logic_adapter import CustomLogicAdapter
-from chatterbot.conversation import Statement
-from chat.lev_dist import lev_dist, lev_dist_str_correct_w, lev_dist_custom_dist
 import datetime
+from chatterbot.conversation import Statement
+from chat.adapters.custom_logic_adapter import CustomLogicAdapter
+from chat.lev_dist import lev_dist, lev_dist_str_correct_w, lev_dist_custom_dist
 from chat.requests.request_factory import ProjectRequestCreator, ActivityRequestCreator
 from chat.requests.activity_request import RequestError
 
@@ -17,7 +17,7 @@ class WorkedHoursAdapter(CustomLogicAdapter):
         self.project = None
         self.hours = 0
 
-    def can_process(self, statement, additional_response_selection_parameters=None):
+    def can_process(self, statement):
         cons_words = ['consuntivazione', 'consuntivate', 'totali', 'progetto', 'consuntivo']
         hours_words = ['ore', 'totale']
 
@@ -28,8 +28,7 @@ class WorkedHoursAdapter(CustomLogicAdapter):
         if lev_dist_custom_dist(input_words, hours_words, 1) and lev_dist(input_words, cons_words):
             self.processing_stage = "ore"
             return True
-        else:
-            return False
+        return False
 
     def process(self, statement, additional_response_selection_parameters=None):
 
@@ -83,7 +82,7 @@ class WorkedHoursAdapter(CustomLogicAdapter):
         response.confidence = confidence
         return response
 
-    def check_project(self, text: str):
+    def check_project(self, text):
         projects = []
         project_request = ProjectRequestCreator().get_request(self.api_key)
         request_response = project_request.send()
@@ -94,5 +93,4 @@ class WorkedHoursAdapter(CustomLogicAdapter):
         if lev_dist_custom_dist(text.split(), projects, 1):
             self.project = lev_dist_str_correct_w(text.split(), projects)
             return True
-        else:
-            return False
+        return False

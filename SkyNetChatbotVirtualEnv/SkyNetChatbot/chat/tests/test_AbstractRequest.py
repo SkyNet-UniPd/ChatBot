@@ -1,5 +1,5 @@
 from django.test import TestCase
-from chat.requests.abstract_request import *
+from chat.requests.abstract_request import AbstractRequest, RequestError
 
 
 class AbstractRequestTest(TestCase):

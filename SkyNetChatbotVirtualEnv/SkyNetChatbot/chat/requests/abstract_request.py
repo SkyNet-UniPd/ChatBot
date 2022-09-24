@@ -13,8 +13,7 @@ class RequestError(Exception):
         elif self.error_code == "401":
             return str("Errore di autenticazione! Verifica di aver effettuato il login inserendo un api key "
                        "corretta! Error 401 - Unauthorized.")
-        elif self.error_code == "InternalError" or self.error_code == "RequestNotImplemented" or \
-                self.error_code == "RequestNotReady":
+        elif self.error_code in ("InternalError", "RequestNotImplemented", "RequestNotReady"):
             return str("Ops, qualcosa è andato storto... Riprova ad effettuare l'operazione")
         elif self.error_code == "ConnectionError" or self.error_code.__contains__("Timeout"):
             return str("Errore di connessione! Verificare la propria connessione di rete. Se il problema persiste "
@@ -27,11 +26,10 @@ class AbstractRequest:
 
     def __init__(self, api_key):
         self.api_key = api_key  # Test API Key: 87654321-4321-4321-4321-210987654321
-        self.properties = dict()
+        self.properties = {}
         self.status = "Created"
 
-    @staticmethod
-    def send() -> requests.Response:
+    def send(self) -> requests.Response:
         """Metodo astratto che viene implementato dalle varie sottoclassi, se non viene ridefinito viene lanciata
         un'eccezione di tipo RequestError"""
         raise RequestError("RequestNotImplemented")

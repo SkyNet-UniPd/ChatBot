@@ -14,9 +14,9 @@ class CheckOutRequest(AbstractRequest):
             url = 'https://apibot4me.imolinfo.it/v1/locations/' + self.sede + '/presence'
             try:
                 service_response = requests.delete(url, headers={"api_key": self.api_key,
-                                                                 "Content-Type": "application/json"})
+                                                                 "Content-Type": "application/json"}, timeout=10)
             except requests.RequestException as req:
-                raise RequestError(str(req.__class__.__name__))
+                raise RequestError(str(req.__class__.__name__)) from req
             if service_response.status_code == 204:
                 self.status = "Ok"
                 return service_response
@@ -28,5 +28,4 @@ class CheckOutRequest(AbstractRequest):
     def is_ready(self):
         if self.sede is not None:
             return True
-        else:
-            return False
+        return False

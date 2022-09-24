@@ -1,0 +1,11 @@
+[run]
+omit=
+    */staticfiles/*
+    */tests/*
+    */static/*
+    */__pychache__/*
+    */__init__.py
+    */models.py
+    */settings.py
+    */urls.py
+    */manage.py

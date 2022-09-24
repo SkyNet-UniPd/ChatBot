@@ -1,10 +1,9 @@
+import requests
 from django.test import TestCase
 from chatterbot import ChatBot
-from chat import settings
 from chatterbot.conversation import Statement
-import requests
+from chat import settings
 from chat.adapters.check_in_adapter import CheckInAdapter
-from chat.requests.check_in_request import CheckInRequest
 
 
 class CheckInAdapterTest(TestCase):
@@ -19,7 +18,7 @@ class CheckInAdapterTest(TestCase):
         # *IMPORTANTE*
         # NON CAMBIARE QUESTO LINK, SI PRESUPPONE CHE TUTTI I TEST SIANO EFFETTUATI NELLA SEDE 'IMOLA'
         url = 'https://apibot4me.imolinfo.it/v1/locations/IMOLA/presence'
-        requests.delete(url, headers={"api_key": api_key, "Content-Type": "application/json"})
+        requests.delete(url, headers={"api_key": api_key, "Content-Type": "application/json"}, timeout=10)
 
     # def tearDown(self):
     #     pass

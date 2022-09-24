@@ -1,14 +1,13 @@
-from django.test import TestCase
-from chat.views import ChatterBotApiView
-from django.test import Client
+from django.test import TestCase, Client
 from django.urls import reverse
+from chat.views import ChatterBotApiView
 
 
 class ViewsTest(TestCase):
     
     def setUp(self):
         self.client = Client()
-        self.api_key = '87654321-4321-4321-4321-210987654321'
+        self.api_key = 'rVeXERS/iI2xo3ri+bfgsOuM4gGsLPY6GnlEZ5JyOTplASh8/pbSUegx5HlxVEVY'
         self.view = ChatterBotApiView()
 
     def test_get_request(self):

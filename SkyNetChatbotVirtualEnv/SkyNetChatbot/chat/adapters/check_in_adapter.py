@@ -1,8 +1,8 @@
-from chat.adapters.custom_logic_adapter import CustomLogicAdapter
+import re
 from chatterbot.conversation import Statement
+from chat.adapters.custom_logic_adapter import CustomLogicAdapter
 from chat.lev_dist import lev_dist, lev_dist_custom_dist, lev_dist_str, lev_dist_str_correct_w
 from chat.requests.check_in_request import RequestError
-import re
 from chat.requests.request_factory import CheckInRequestCreator, PresenceRequestCreator, LocationRequestCreator
 
 
@@ -18,7 +18,7 @@ class CheckInAdapter(CustomLogicAdapter):
         super().__init__(chatbot, **kwargs)
         self.sede = None
 
-    def can_process(self, statement, additional_response_selection_parameters=None):
+    def can_process(self, statement):
         check_in_words = ['check-in', 'checkin', 'arrivato', 'entrato', 'entro']
 
         # Sostituzione delle parole 'check in' con la parola 'check-in'
@@ -102,7 +102,7 @@ class CheckInAdapter(CustomLogicAdapter):
         else:
             raise RequestError("InternalError")
 
-    def check_sede(self, text: str):
+    def check_sede(self, text):
         locations = []
         location_request = LocationRequestCreator().get_request(self.api_key)
         request_response = location_request.send()

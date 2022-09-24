@@ -20,8 +20,7 @@ class CustomLogicAdapter(LogicAdapter):
         exit_words = ['chiudi', 'annulla', 'stop', 'fine', 'esci', 'exit']
         if lev_dist_custom_dist(input_words, exit_words, 1):
             return True
-        else:
-            return False
+        return False
 
     def reset_processing_stage(self):
         self.processing_stage = None

@@ -1,8 +1,8 @@
 from django.test import TestCase
 from chatterbot import ChatBot
+from chatterbot.conversation import Statement
 from chat.adapters.default_adapter import DefaultAdapter
 from chat import settings
-from chatterbot.conversation import Statement
 
 
 class DefaultAdapterTest(TestCase):

@@ -1,10 +1,10 @@
+import requests
 from django.test import TestCase
 from chatterbot import ChatBot
-from chat import settings
 from chatterbot.conversation import Statement
+from chat import settings
 from chat.adapters.check_out_adapter import CheckOutAdapter
-from chat.requests.check_out_request import CheckOutRequest
-import requests
+
 
 
 class CheckOutAdapterTest(TestCase):
@@ -16,7 +16,7 @@ class CheckOutAdapterTest(TestCase):
         # *IMPORTANTE*
         # NON CAMBIARE QUESTO LINK, SI PRESUPPONE CHE TUTTI I TEST SIANO EFFETTUATI NELLA SEDE 'IMOLA'
         url = 'https://apibot4me.imolinfo.it/v1/locations/IMOLA/presence'
-        requests.post(url, headers={"api_key": api_key, "Content-Type": "application/json"})
+        requests.post(url, headers={"api_key": api_key, "Content-Type": "application/json"}, timeout=10)
 
     def test_there_is_checkout_adapter(self):
         """TU11: Test per il controllo che esista check-out adapter"""

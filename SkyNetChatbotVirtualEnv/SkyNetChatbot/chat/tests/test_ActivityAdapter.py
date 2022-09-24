@@ -1,10 +1,10 @@
+import requests
 from django.test import TestCase
 from chatterbot import ChatBot
-import requests
+from chatterbot.conversation import Statement
 from chat.adapters.activity_adapter import ActivityAdapter
 from chat import settings
-from chatterbot.conversation import Statement
-from chat.requests.activity_request import ActivityRequest
+
 
 class ActivityAdapterTest(TestCase):
     chatterbot = None
@@ -18,7 +18,7 @@ class ActivityAdapterTest(TestCase):
         # *IMPORTANTE*
         # NON CAMBIARE QUESTO LINK, SI PRESUPPONE CHE TUTTI I TEST SIANO EFFETTUATI NELLA SEDE 'IMOLA'
         url = 'https://apibot4me.imolinfo.it/v1/locations/IMOLA/presence'
-        requests.delete(url, headers={"api_key": self.api_key, "Content-Type": "application/json"})
+        requests.delete(url, headers={"api_key": self.api_key, "Content-Type": "application/json"}, timeout=10)
 
     def test_there_is_activity_adapter(self):
         """TU32: Test per il controllo che esista activity adapter."""
@@ -50,7 +50,7 @@ class ActivityAdapterTest(TestCase):
     def test_right_project_and_ore_question(self):
         """TU37: Test per il controllo inserimento attività inserendo un progetto esistente e non terminato."""
         self.adapter.processing_stage = "attività progetto"
-        project = Statement('SkynetTest')
+        project = Statement('TEST-SKYNET')
         response = self.adapter.process(project)
         self.assertEqual(response.text, self.adapter.selected_progetto_response + project.text +
                          "! \n" + self.adapter.ore_response)
@@ -94,7 +94,7 @@ class ActivityAdapterTest(TestCase):
         """TU43: Test per il controllo inserimento attività inserendo le ore da consuntivare in un formato valido e il luogo
         viene selezionato automaticamente dalla presenza in sede."""
         url = 'https://apibot4me.imolinfo.it/v1/locations/IMOLA/presence'
-        requests.post(url, headers={"api_key": self.adapter.api_key, "Content-Type": "application/json"})
+        requests.post(url, headers={"api_key": self.adapter.api_key, "Content-Type": "application/json"}, timeout=10)
         self.adapter.processing_stage = "attività ore"
         billable_hours = Statement(7.5)
         response = self.adapter.process(billable_hours)
@@ -105,7 +105,7 @@ class ActivityAdapterTest(TestCase):
         word = Statement('Inserisci attività')
         self.adapter.can_process(word)
         self.adapter.process(word)
-        project = Statement('skynetTest')
+        project = Statement('TEST-SKYNET')
         self.adapter.process(project)
         billable_hours = Statement(8.0)
         self.adapter.process(billable_hours)
@@ -153,7 +153,7 @@ class ActivityAdapterTest(TestCase):
 
     def test_check_project_no(self):
         """Test per verificare che venga controllato il codice del progetto"""
-        project = '-'
+        project = 'test'
         self.assertFalse(self.adapter.check_project(project))
 
     def test_check_sede_ok(self):
@@ -169,7 +169,7 @@ class ActivityAdapterTest(TestCase):
     def test_activity_request_error(self):
         """Test per verificare che venga ritornato un errore se una richiesta API non va a buon fine"""
         self.adapter.processing_stage = "attività progetto"
-        word = Statement('skynetTest')
+        word = Statement('TEST-SKYNET')
         self.adapter.can_process(word)
         self.adapter.api_key = "1"
         response = self.adapter.process(word)
