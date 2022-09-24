@@ -1,5 +1,6 @@
-# SkyNet Chatbot
-Progetto Ingegneria del Software 2021-2022, gruppo SkyNet
+# PoC SkyNetChatbot
+
+SkyNet Chatbot
 
 ## Requirments 
 1. Python 3.7.9
@@ -29,7 +30,7 @@ yarn run devwin
 
 ## Execute Tests
 
-Command to run all tests present in the Django Project
+Command to run all tests present in the Django Project from 'SkyNetChatbot' base directory
 
 ```
 python3 manage.py test
@@ -39,4 +40,12 @@ To run the tests specifically within an app module
 
 ```
 python3 manage.py test specific_test
+```
+
+## Execute Code Coverage
+
+Command to run all tests present in the Django Project from 'SkyNetChatbot' base directory with code coverage report
+
+```
+coverage run manage.py test -v 2 && coverage report
 ```

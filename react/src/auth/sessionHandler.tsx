@@ -1,4 +1,4 @@
-import { deleteApiKey, setApiKey } from "./authService";
+import { deleteApiKey, setApiKey, encrypt } from "./authService";
 
 /* Variabili inutilizzate
 let isLoginProcedure = false;
@@ -44,17 +44,18 @@ export function sessionErrorHandler(message: string): void {
  * Test nuova funzione che gestisce il login e il logout
  */
 
-export function handleSession(reply: string, message: string) {
-   try{
-    if (reply.includes(loginSuccess)){
-      setApiKey(message);
-    }else if(reply.includes(logoutSuccess)){
-      deleteApiKey();
-    }
-   } catch (error) {
-      console.log(error);
-      return null;
-    }
+ export function handleSession(reply: string, message: string) {
+  try{
+   if (reply.includes(loginSuccess)){
+     const enc_apy_key = encrypt(message);
+     setApiKey(enc_apy_key);
+   }else if(reply.includes(logoutSuccess)){
+     deleteApiKey();
+   }
+  } catch (error) {
+     console.log(error);
+     return null;
+   }
 }
 
 /*

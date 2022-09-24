@@ -19,3 +19,16 @@ export function setApiKey(message: string): void {
 export function deleteApiKey(): void {
     localStorage.removeItem('api_key');
 }
+
+/**
+ * 
+ * @param message 
+ * @returns l'API Key criptata usando l'algoritmo AES
+ */
+export function encrypt(message: string): string {
+    const CryptoJS = require("crypto-js");
+    let key = '2442264529482B4D';
+    key = CryptoJS.enc.Utf8.parse(key);
+    const encApiKey = CryptoJS.AES.encrypt(message, key, {mode: CryptoJS.mode.ECB});
+    return encApiKey.toString();
+}
